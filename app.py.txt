@@ -1,0 +1,26 @@
+import streamlit as st
+import joblib
+
+# Load model and vectorizer
+model = joblib.load('fake_news_model.pkl')
+vectorizer = joblib.load('tfidf_vectorizer.pkl')
+
+st.title("📰 Fake News Detector")
+st.write("Enter news content to predict if it's FAKE or REAL.")
+
+user_input = st.text_area("Enter the news article:")
+
+def predict_news(text):
+    tfidf = vectorizer.transform([text])
+    prediction = model.predict(tfidf)[0]
+    return "FAKE" if prediction == 0 else "REAL"
+
+if st.button("Check News"):
+    if user_input.strip() == "":
+        st.warning("⚠️ Please enter some text.")
+    else:
+        result = predict_news(user_input)
+        if result == "FAKE":
+            st.error("❌ This news is likely FAKE.")
+        else:
+            st.success("✅ This news is likely REAL.")
